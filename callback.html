@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>Tesla 인증 완료</title>
+    <style>
+      :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+      body { max-width: 42rem; margin: 4rem auto; padding: 0 1.25rem; line-height: 1.65; }
+      textarea { width: 100%; min-height: 8rem; box-sizing: border-box; padding: .8rem; }
+      button { padding: .65rem 1rem; cursor: pointer; }
+      .error { color: #d33; }
+    </style>
+  </head>
+  <body>
+    <h1 id="title">Tesla 인증 응답</h1>
+    <p id="message">아래 주소를 복사해 로컬 OAuth 도구에 붙여 넣으세요.</p>
+    <textarea id="url" readonly aria-label="OAuth callback URL"></textarea>
+    <p><button id="copy" type="button">전체 주소 복사</button></p>
+    <script>
+      const params = new URLSearchParams(location.search);
+      const output = document.querySelector("#url");
+      output.value = location.href;
+      if (params.has("error")) {
+        document.querySelector("#title").textContent = "Tesla 인증 실패";
+        document.querySelector("#message").textContent = params.get("error_description") || params.get("error");
+        document.querySelector("#message").className = "error";
+      } else if (!params.has("code") || !params.has("state")) {
+        document.querySelector("#message").textContent = "인증 코드가 없습니다. OAuth 인증을 다시 시작하세요.";
+        document.querySelector("#message").className = "error";
+      }
+      document.querySelector("#copy").addEventListener("click", async () => {
+        await navigator.clipboard.writeText(location.href);
+        document.querySelector("#copy").textContent = "복사됨";
+      });
+    </script>
+  </body>
+</html>
